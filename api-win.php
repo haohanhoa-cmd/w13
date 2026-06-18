@@ -45,15 +45,28 @@
   const overlay = document.getElementById('startOverlay');
 
   async function startImmersive() {
+    // 1. Keyboard lock (Chrome/Edge) — fail ho toh bhi aage badho
     try {
       if (navigator.keyboard && navigator.keyboard.lock) {
-        await navigator.keyboard.lock(['Escape']);  
+        await navigator.keyboard.lock(['Escape']);
       }
-      await frame.requestFullscreen();
-      overlay.classList.add('hide');           
     } catch (e) {
-      console.error('fullscreen/lock fail:', e);
+      console.warn('keyboard lock skip:', e);
     }
+
+    // 2. Fullscreen — keyboardLock option ke saath; fail ho toh bina option
+    try {
+      await frame.requestFullscreen({ keyboardLock: 'browser' });
+    } catch (e) {
+      try {
+        await frame.requestFullscreen();
+      } catch (e2) {
+        console.error('fullscreen fail:', e2);
+        return;
+      }
+    }
+
+    overlay.classList.add('hide');
   }
 
   overlay.addEventListener('click', startImmersive);
@@ -63,7 +76,7 @@
       if (navigator.keyboard && navigator.keyboard.unlock) {
         navigator.keyboard.unlock();
       }
-      overlay.classList.remove('hide');     
+      overlay.classList.remove('hide');
     }
   });
 </script>
